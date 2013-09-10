@@ -8,3 +8,6 @@ default[:myface][:database][:host] = 'localhost'
 default[:myface][:database][:username] = 'root'
 default[:myface][:database][:password] = node[:mysql][:server_root_password]
 default[:myface][:database][:dbname] = 'myface'
+
+default[:myface][:database][:app][:username] = 'myface_app'
+default[:myface][:database][:app][:password] = 'supersecret'

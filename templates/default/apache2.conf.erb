@@ -1,8 +1,23 @@
 # Managed by Chef for <%= node[:hostname] %>
+<VirtualHost *:80>
+        ServerAdmin <%= node[:apache][:contact] %>
 
-Alias / <%= node[:myface][:document_root] %>/
+        DocumentRoot <%= node[:myface][:document_root] %>
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory <%= node[:myface][:document_root] %>>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
 
-<Directory <%= node[:myface][:document_root] %>>
-    Options FollowSymLinks +Indexes
-    Allow from All
-</Directory>
+        ErrorLog <%= node[:apache][:log_dir] %>/error.log
+
+        LogLevel warn
+
+        CustomLog <%= node[:apache][:log_dir] %>/access.log combined
+        ServerSignature Off
+</VirtualHost>

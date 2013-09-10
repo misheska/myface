@@ -37,11 +37,13 @@ end
 # create document root
 directory "#{node[:myface][:document_root]}" do
   action :create
+  mode "0755"
   recursive true
 end
 
 # write site
-cookbook_file "#{node[:myface][:document_root]}/index.html" do
+template "#{node[:myface][:document_root]}/index.php" do
+  source "index.php.erb"
   mode "0644"
 end
 

@@ -16,6 +16,12 @@ user node[:myface][:user] do
 end
 
 include_recipe "apache2"
+include_recipe "apache2::mod_php5"
+
+package "php-mysql" do
+  action :install
+  notifies :restart, "service[apache2]"
+end
 
 # disable default site
 apache_site "000-default" do

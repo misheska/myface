@@ -14,3 +14,5 @@ user node[:myface][:user] do
   system true
   shell "/bin/bash"
 end
+
+include_recipe "apache2"

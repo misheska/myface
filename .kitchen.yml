@@ -10,6 +10,12 @@ platforms:
     box_url: https://s3-us-west-2.amazonaws.com/misheska/vagrant/virtualbox/misheska-centos64.box
     network:
     - ["private_network", {ip: "33.33.33.10"}]
+- name: ubuntu-1204
+  driver_config:
+    box: misheska-ubuntu1204
+    box_url: https://s3-us-west-2.amazonaws.com/misheska/vagrant/virtualbox/misheska-ubuntu1204.box
+    network:
+    - ["private_network", {ip: "33.33.33.11"}]
 
 suites:
 - name: default

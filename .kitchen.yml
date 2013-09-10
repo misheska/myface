@@ -1,0 +1,21 @@
+---
+driver_plugin: vagrant
+driver_config:
+  require_chef_omnibus: true
+
+platforms:
+- name: centos-64
+  driver_config:
+    box: misheska-centos64
+    box_url: https://s3-us-west-2.amazonaws.com/misheska/vagrant/virtualbox/misheska-centos64.box
+    network:
+    - ["private_network", {ip: "33.33.33.10"}]
+
+suites:
+- name: default
+  run_list: ["recipe[myface]"]
+  attributes:
+    mysql:
+      server_root_password: "rootpass"
+      server_debian_password: "debpass"
+      server_repl_password: "replpass"

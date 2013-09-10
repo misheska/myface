@@ -1,8 +1,8 @@
 # Managed by Chef for <%= node[:hostname] %>
 
-Alias / /srv/apache/myface/
+Alias / <%= node[:myface][:document_root] %>/
 
-<Directory /srv/apache/myface>
+<Directory <%= node[:myface][:document_root] %>>
     Options FollowSymLinks +Indexes
     Allow from All
 </Directory>

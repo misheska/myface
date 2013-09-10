@@ -1,2 +1,5 @@
 default[:myface][:user] = "myface"
 default[:myface][:group] = "myface"
+default[:myface][:name] = "myface"
+default[:myface][:config] = "myface.conf"
+default[:myface][:document_root] = "/srv/apache/myface"

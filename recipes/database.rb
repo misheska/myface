@@ -30,3 +30,17 @@ mysql_database_user node[:myface][:database][:app][:username] do
   host node[:myface][:database][:host]
   action [:create, :grant]
 end
+
+# Write schema seed file to filesystem
+cookbook_file node[:myface][:database][:seed_file] do
+  source "myface-create.sql"
+  owner "root"
+  group "root"
+  mode "0600"
+end
+
+# Seed database with test data
+execute "initialize myface database" do
+  command "mysql -h #{node[:myface][:database][:host]} -u #{node[:myface][:database][:app][:username]} -p#{node[:myface][:database][:app][:password]} -D #{node[:myface][:database][:dbname]} < #{node[:myface][:database][:seed_file]}"
+  not_if  "mysql -h #{node[:myface][:database][:host]} -u #{node[:myface][:database][:app][:username]} -p#{node[:myface][:database][:app][:password]} -D #{node[:myface][:database][:dbname]} -e 'describe users;'"
+end

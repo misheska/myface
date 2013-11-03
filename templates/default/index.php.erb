@@ -53,20 +53,24 @@ function neckbeard($rating) {
     return $ratings[(int) $rating - 1];
 }
 
-// Fire up the database
-if (!mysql_connect($db_host, $db_user, $db_pwd))
-    die("Can't connect to database");
+function fetch($host, $dbname, $dbuser, $dbpass, $table) {
+    try {
+        $connection = new PDO("mysql:host={$host};dbname={$dbname}", $dbuser, $dbpass);
+        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if (!mysql_select_db($database))
-    die("Can't select database");
+        $rc = $connection->query("SELECT COUNT(*) FROM {$table}");
+        $count = $rc->fetchColumn();
 
-// sending query
-$result = mysql_query("SELECT * FROM {$table}");
-if (!$result) {
-    die("Query to show fields from table failed");
+        $result = $connection->query("SELECT * FROM {$table}");
+
+        return array($result, $count);
+    } catch(Exception $e) {
+        die($e->getMessage());
+    }
 }
 
-$fields_num = mysql_num_fields($result);
+list($result, $fields_num) = fetch($db_host, $database, $db_user, $db_pwd, $table);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -184,7 +188,7 @@ $fields_num = mysql_num_fields($result);
 <body>
     <h1>Welcome to My<span>Face</span>!</h1>
 
-    <?php while($row = mysql_fetch_object($result)): ?>
+    <?php while($row = $result->fetch(PDO::FETCH_OBJ)): ?>
     <article>
         <a href="<?php echo $row->url ?>" class="img" target="_blank">
             <?php echo gravatar_img($row->email, $row->user_name, 150) ?>

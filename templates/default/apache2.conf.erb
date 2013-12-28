@@ -1,0 +1,8 @@
+# Managed by Chef for <%= node['hostname'] %>
+
+Alias / /srv/apache/myface/
+
+<Directory /srv/apache/myface>
+	Options FollowSymLinks +Indexes
+	Allow from All
+</Directory>

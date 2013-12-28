@@ -6,3 +6,11 @@
 # 
 # All rights reserved - Do Not Redistribute
 #
+
+group 'myface'
+
+user 'myface' do
+  group 'myface'
+  system true
+  shell '/bin/bash'
+end

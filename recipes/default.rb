@@ -6,4 +6,5 @@
 # All rights reserved - Do Not Redistribute
 #
 
+include_recipe 'myface::database'
 include_recipe 'myface::webserver'

@@ -16,6 +16,12 @@ user node['myface']['user'] do
 end
 
 include_recipe 'apache2'
+include_recipe 'apache2::mod_php5'
+
+package 'php-mysql' do
+  action :install
+  notifies :restart, 'service[apache2]'
+end
 
 # disable default site
 apache_site '000-default' do
@@ -36,7 +42,7 @@ end
 
 # write site
 cookbook_file "#{node['myface']['document_root']}/index.html" do
-  mode '0644'
+  mode "0644"
 end
 
 # enable myface

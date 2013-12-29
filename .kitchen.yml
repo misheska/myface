@@ -6,11 +6,18 @@ provisioner:
   name: chef_solo
 
 platforms:
-  - name: ubuntu-12.04
-  - name: centos-6.4
+- name: centos65
+  driver_config:
+    box: centos65
+    box_url: https://s3-us-west-2.amazonaws.com/misheska/vagrant/virtualbox4.3.6/centos65.box
+    network:
+    - ["private_network", {ip: "33.33.33.10"}]
 
 suites:
-  - name: default
-    run_list:
-      - recipe[myface::default]
-    attributes:
+- name: default
+  run_list: ["recipe[myface]"]
+  attributes:
+    mysql:
+      server_root_password: "rootpass"
+      server_debian_password: "debpass"
+      server_repl_password: "replpass"

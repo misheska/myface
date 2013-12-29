@@ -1,0 +1,205 @@
+<!--
+Copyright 2013, Opscode, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+
+<?php
+$db_host = 'localhost';
+$db_user = 'root';
+$db_pwd = '<%= node['mysql']['server_root_password'] %>';
+
+$database = 'myface';
+$table = 'users';
+
+// UTILITY FUNCTIONS
+function create_gravatar_hash($email) {
+    return md5( strtolower( trim( $email ) ) );
+}
+
+function gravatar_img($email=null, $name=null, $size=null) {
+    if(!$email) {
+        return '';
+    }
+    
+    $url =  'http://www.gravatar.com/avatar/';
+    $url .= create_gravatar_hash($email);
+    if($size) {
+        $url .= "?s={$size}";
+    }
+    
+    return sprintf('<img src="%s" alt="%s" />', $url, $name ? $name : '');
+}
+
+function neckbeard($rating) {
+    $ratings = array(
+        'Puberty awaits!',
+        'Peach fuzz',
+        'Solid week&#39;s growth',
+        'Lumberjacks would be proud',
+        'Makes dwarves weep',
+    );
+    
+    return $ratings[(int) $rating - 1];
+}
+
+function fetch($host, $dbname, $dbuser, $dbpass, $table) {
+    try {
+        $connection = new PDO("mysql:host={$host};dbname={$dbname}", $dbuser, $dbpass);
+        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $rc = $connection->query("SELECT COUNT(*) FROM {$table}");
+        $count = $rc->fetchColumn();
+
+        $result = $connection->query("SELECT * FROM {$table}");
+
+        return array($result, $count);
+    } catch(Exception $e) {
+        die($e->getMessage());
+    }
+}
+
+list($result, $fields_num) = fetch($db_host, $database, $db_user, $db_pwd, $table);
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MyFace Users</title>
+    <style>
+    * {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+    
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+    
+    html {
+        background: #999;
+    }
+    
+    body {
+        max-width: 480px;
+        margin: 0 auto;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #222;
+        padding: 20px;
+        border: 1px solid #666;
+        -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        -moz-box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        background: #FFF;
+    }
+        
+    a:link {
+        text-decoration: none;
+        color: #777;
+    }
+    
+    a:hover,
+    a:focus {
+        text-decoration: underline;
+    }
+    
+    h1 {
+        text-align: center;
+        margin-top: 0;
+    }
+        
+    h1 span {
+        color: #00C;
+    }
+    
+    h2 {
+        font-size: 24px;
+        line-height: 1.0;
+        margin: 0 0 10px;
+    }
+    
+    p {
+        font-size: 14px;
+        line-height: 18px;
+        margin: 10px 0;
+    }
+    
+    p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .email {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    /* Adapted from OOCSS
+        * mod object (https://github.com/stubbornella/oocss/blob/master/core/module/mod.css)
+        * media object (https://github.com/stubbornella/oocss/blob/master/core/media/media.css)
+    */
+    article {
+        display: block;
+        overflow: hidden;
+        margin-bottom: 20px;
+        border: 1px solid #CCC;
+        background: #EEE;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        -webkit-box-shadow: 1px 1px 1px rgba(0,0,0,0.3) inset;
+        -moz-box-shadow: 1px 1px 1px rgba(0,0,0,0.3) inset;
+        box-shadow: 1px 1px 1px rgba(0,0,0,0.3) inset;
+    }
+
+    article .img {
+        float: left;
+        margin-right: 10px;
+    }
+    
+    article .img img {
+        display: block;
+    }
+    
+    article .imgExt {
+        float: right;
+        margin-left: 10px;
+    }
+
+    article .bd {
+        overflow: hidden;
+        padding: 10px 0;
+    }
+    </style>
+</head>
+<body>
+    <h1>Welcome to My<span>Face</span>!</h1>
+
+    <?php while($row = $result->fetch(PDO::FETCH_OBJ)): ?>
+    <article>
+        <a href="<?php echo $row->url ?>" class="img" target="_blank">
+            <?php echo gravatar_img($row->email, $row->user_name, 150) ?>
+        </a>
+        <div class="bd">
+            <h2><?php echo $row->user_name ?></h2>
+            <p><a href="<?php echo $row->url ?>" target="_blank" class="email"><?php echo $row->url ?></a></p>
+            <p>Neckbeard rating: <?php echo neckbeard($row->neck_beard) ?></p>
+        </div>
+    </article>
+    <?php endwhile; ?>
+</body>
+</html>
+<?php mysql_free_result($result); ?>

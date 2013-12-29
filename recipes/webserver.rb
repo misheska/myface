@@ -18,10 +18,7 @@ end
 include_recipe 'apache2'
 include_recipe 'apache2::mod_php5'
 
-package 'php-mysql' do
-  action :install
-  notifies :restart, 'service[apache2]'
-end
+include_recipe 'php::module_mysql'
 
 # disable default site
 apache_site '000-default' do
